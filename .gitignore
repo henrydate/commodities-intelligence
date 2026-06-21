@@ -1,0 +1,45 @@
+# Data
+data/*.csv
+data/**/*.csv
+
+# Models
+models/**/*.pkl
+models/**/*.joblib
+models/*.h5
+
+# Generated outputs
+*.csv.processed
+*.log
+logs/
+
+# Raw EIA bulk dumps (large JSONL; not used by the pipeline)
+*.txt
+!requirements.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
