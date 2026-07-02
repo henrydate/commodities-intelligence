@@ -1,74 +1,41 @@
 # Cross-Asset Commodities Intelligence 📈
 
-Quantifies **what moves oil, gas, the Australian dollar and the stock market — and
-why** — across ~30 years of history, with the statistics to back every claim:
-correlation, R², rolling correlation, single- and multi-factor regression, and a
-90-day forecast. Built on three commodity pipelines (`oil-prices`, `natural-gas`,
-`exchange-rates`) enriched with live macro data from **FRED**, market data from
-**Yahoo Finance**, and Australian data from the **RBA**.
+Quantifies what moves oil, gas, the Australian dollar and the stock market, and why, across roughly 30 years of history, with the statistics to back every claim: correlation, R², rolling correlation, single- and multi-factor regression, and a 90-day forecast. Built on three commodity pipelines (`oil-prices`, `natural-gas`, `exchange-rates`) enriched with live macro data from **FRED**, market data from **Yahoo Finance**, and Australian data from the **RBA**.
 
-An interactive Streamlit dashboard turns it into something you can explore; a
-Flask API exposes the same numbers programmatically.
+An interactive Streamlit dashboard turns it into something you can explore; a Flask API exposes the same numbers programmatically.
 
 ![Dashboard overview](docs/overview.png)
-
----
 
 ## Headline findings
 
 A few results that fall out of the data (annual-horizon, full history):
 
-- **Markets are multi-factor.** No single driver explains an asset. Gold goes from
-  26% explained by its best single factor to **56%** once factors are combined;
-  the S&P 500 from 51% to **71%**. Some "drivers" that look strong alone lose
-  significance once you control for the rest.
-- **Global risk appetite is one latent force** (credit spreads, financial
-  conditions, stress and the VIX all move together) and is fundamentally a
-  *growth + US-monetary* story.
-- **Gold is a real-rates-and-dollar asset** — its two biggest drivers are the 10Y
-  real yield (−) and the US dollar (−), exactly as theory predicts.
-- **Natural gas is the lone idiosyncratic commodity** — near-zero correlation with
-  everything (weather/storage driven).
-- **The ASX 200 is not "made in Australia."** It's a leveraged bet on global risk
-  appetite and the China/commodity cycle; the **RBA cash rate has no independent
-  effect on the index** once global factors are accounted for. See the full
-  write-up in **[ANALYSIS_AUSTRALIA.md](ANALYSIS_AUSTRALIA.md)**.
-- **Copper > iron ore for the ASX.** Despite iron ore being Australia's #1 export,
-  copper drives the *index* (it's a global-risk barometer); iron ore drives
-  national income and miner earnings, not the broad index.
+- **Markets are multi-factor.** No single driver explains an asset. Gold goes from 26% explained by its best single factor to **56%** once factors are combined; the S&P 500 from 51% to **71%**. Some "drivers" that look strong alone lose significance once you control for the rest.
+- **Global risk appetite is one latent force.** Credit spreads, financial conditions, stress and the VIX all move together, and the underlying story is fundamentally about growth and US monetary policy.
+- **Gold is a real-rates-and-dollar asset.** Its two biggest drivers are the 10Y real yield and the US dollar (both negatively correlated), exactly as theory predicts.
+- **Natural gas is the lone idiosyncratic commodity.** Near-zero correlation with everything, driven by weather and storage rather than global macro.
+- **The ASX 200 is not "made in Australia."** It is a leveraged bet on global risk appetite and the China/commodity cycle. The **RBA cash rate has no independent effect on the index** once global factors are accounted for. See the full write-up in **[ANALYSIS_AUSTRALIA.md](ANALYSIS_AUSTRALIA.md)**.
+- **Copper beats iron ore for the ASX.** Despite iron ore being Australia's largest export, copper drives the *index* because it acts as a global-risk barometer. Iron ore drives national income and miner earnings, not the broad index.
 
 ## What it does
 
-- **Correlation & R² matrices** across the tradeable assets (on returns — the
-  statistically sound basis — with price-levels shown only for contrast).
-- **Macro driver analysis:** ~30 macro drivers grouped into themes, each related
-  to every asset at the horizon that matters, **with its transmission mechanism
-  spelled out** (why it moves markets, and in which direction).
-- **Multi-factor models:** a multivariate regression per asset — each effect
-  measured *holding the others constant*, with standardised betas, significance,
-  VIF multicollinearity checks, and an incremental-R² build-up.
+- **Correlation and R² matrices** across tradeable assets, calculated on returns (the statistically sound basis) with price-levels shown alongside for contrast.
+- **Macro driver analysis:** roughly 30 macro drivers grouped into themes, each related to every asset at the horizon that matters, with the transmission mechanism spelled out (why it moves markets, and in which direction).
+- **Multi-factor models:** a multivariate regression per asset. Each effect is measured holding the others constant, with standardised betas, significance, VIF multicollinearity checks, and an incremental-R² build-up.
 - **Rolling correlation:** how relationships strengthen or break down over time.
-- **90-day LSTM forecast** for the four core commodity/FX series, in real units,
-  benchmarked against naïve baselines.
+- **90-day LSTM forecast** for the four core commodity and FX series, in real units, benchmarked against naive baselines.
 
 ## Methodology (why returns, not prices)
 
-Correlating raw **price levels** is misleading — two series that both trended up
-for years look correlated even if unrelated (*spurious correlation*). The sound
-approach is to correlate **changes**, and to use the right change per series:
+Correlating raw **price levels** is misleading. Two series that both trended up over years look correlated even if unrelated (this is known as spurious correlation). The sound approach is to correlate **changes**, using the right transformation per series:
 
-- price-like series → percentage **returns**
-- nominal levels (M2, CPI, debt, GDP) → **year-over-year** change
-- rates / spreads / ratios → **first differences** (a % change of something that
-  can cross zero is meaningless)
+- price-like series: percentage **returns**
+- nominal levels (M2, CPI, debt, GDP): **year-over-year** change
+- rates, spreads and ratios: **first differences** (a percentage change of something that can cross zero is meaningless)
 
-Fast tradeable assets are analysed daily; slow macro drivers are resampled to
-month-end and compared at an **annual horizon**, the timescale at which macro
-relationships actually show up. Statistics use pairwise-complete observations, so
-assets with shorter history (e.g. Gold ETF from 2004) still contribute where data
-overlaps — nothing is fabricated, nothing is wasted.
+Fast tradeable assets are analysed daily; slow macro drivers are resampled to month-end and compared at an **annual horizon**, which is the timescale at which macro relationships actually show up. Statistics use pairwise-complete observations, so assets with shorter history (e.g. Gold ETF from 2004) still contribute where data overlaps.
 
-## Data — asset universe
+## Data: asset universe
 
 **Tradeable assets** (daily, analysed on returns):
 
@@ -86,18 +53,16 @@ overlaps — nothing is fabricated, nothing is wasted.
 | Theme           | Series                                                          |
 |-----------------|----------------------------------------------------------------|
 | Liquidity       | M2, Fed balance sheet, reverse-repo                            |
-| Rates           | Fed funds, 2Y & 10Y Treasury, 10Y real yield, 10Y–2Y curve     |
+| Rates           | Fed funds, 2Y and 10Y Treasury, 10Y real yield, 10Y-2Y curve  |
 | Inflation       | CPI, core PCE, 10Y breakeven inflation                        |
-| Credit & Risk   | Baa credit spread, Chicago Fed & St Louis financial conditions |
+| Credit and Risk | Baa credit spread, Chicago Fed and St Louis financial conditions |
 | Growth          | Industrial production, jobless claims, real GDP, unemployment   |
-| Fiscal & Debt   | Federal debt, debt-to-GDP, household debt-service ratio         |
+| Fiscal and Debt | Federal debt, debt-to-GDP, household debt-service ratio         |
 | Dollar          | Trade-weighted USD (broad)                                      |
 | Global cycle    | Iron ore (IMF), China exports                                  |
 | Australia (RBA) | Cash rate, 10Y AGB yield, year-ended CPI, AUD trade-weighted   |
 
-Sources: **FRED** (macro + IMF commodity prices), **Yahoo Finance** (equities,
-gold, copper, VIX, real DXY), and the **RBA's free CSV tables** for Australian
-series. History spans **1997–present (~7,500 trading days)**.
+Sources: **FRED** (macro and IMF commodity prices), **Yahoo Finance** (equities, gold, copper, VIX, real DXY), and the **RBA's free CSV tables** for Australian series. History spans **1997 to present (roughly 7,500 trading days)**.
 
 ## Quick start
 
@@ -114,31 +79,29 @@ The macro series use a working FRED demo key by default; set your own with
 
 Eight focused views. A few highlights:
 
-**What Moves Markets** — an asset × macro-theme R² map; the big picture at a glance.
+**What Moves Markets:** an asset × macro-theme R² map showing the big picture at a glance.
 
 ![What moves markets](docs/what_moves_markets.png)
 
-**Macro Drivers** — drill into any asset: ranked drivers with the *why* (transmission
-mechanism), beta and significance.
+**Macro Drivers:** drill into any asset to see ranked drivers with the transmission mechanism, beta and significance.
 
 ![Macro drivers](docs/macro_drivers_sp500.png)
 
-**Multi-Factor Model** — drivers working together: standardised β, VIF, and how
-explanatory power builds up versus the best single factor.
+**Multi-Factor Model:** drivers working together, showing standardised beta, VIF, and how explanatory power builds up versus the best single factor.
 
 ![Multi-factor model](docs/multifactor_sp500.png)
 
-**90-Day Forecasts** — an LSTM forecast plotted as a continuation of recent history.
+**90-Day Forecasts:** an LSTM forecast plotted as a continuation of recent history.
 
 ![Forecast](docs/forecast_brent.png)
 
 | Section             | What you get                                                    |
 |---------------------|----------------------------------------------------------------|
 | Overview            | KPIs, an asset performance chart (1mo/1yr), and per-asset cards |
-| What Moves Markets   | Asset × macro-theme R² map — the big picture at a glance        |
-| Macro Drivers        | Drill into any asset: ranked drivers, beta, significance, *why* |
-| Multi-Factor Model   | Drivers together — standardised β, VIF, combined vs single R²   |
-| Correlation Lab      | Daily correlation & R² heatmaps for tradeable assets           |
+| What Moves Markets   | Asset × macro-theme R² map                                     |
+| Macro Drivers        | Drill into any asset: ranked drivers, beta, significance, why  |
+| Multi-Factor Model   | Drivers together: standardised beta, VIF, combined vs single R² |
+| Correlation Lab      | Daily correlation and R² heatmaps for tradeable assets         |
 | Rolling Correlation  | Time-varying correlation between any two assets                 |
 | Price Explorer       | Full-history charts, rebase-to-100, log scale, adjustable window |
 | Forecasts            | 90-day forecast plotted as a continuation of recent history     |
@@ -164,31 +127,19 @@ commodities-intelligence/
 └── requirements.txt
 ```
 
-`src/catalog.py` is the design centre: every series — asset or macro driver —
-declares its source, frequency, the correct statistical transform, and its
-transmission mechanism. Add one entry there and it flows through fetching,
-analysis and the entire dashboard automatically.
+`src/catalog.py` is the design centre. Every series (whether a tradeable asset or macro driver) declares its source, frequency, the correct statistical transform, and its transmission mechanism. Add one entry there and it flows through fetching, analysis and the entire dashboard automatically.
 
-`refresh.py` writes tidy CSVs to `data/` (`merged_data`, `corr_returns`,
-`r2_returns`, `macro_relationships`, `multifactor_coefficients`,
-`multifactor_summary`, `forecasts`, `baselines`, `metrics`).
+`refresh.py` writes tidy CSVs to `data/` (`merged_data`, `corr_returns`, `r2_returns`, `macro_relationships`, `multifactor_coefficients`, `multifactor_summary`, `forecasts`, `baselines`, `metrics`).
 
 ## Forecasting model
 
-A multi-output **LSTM** (64 → 32 units, dropout) trained on the full commodity
-history: a 60-day window predicts the next day, rolled forward 90 days and
-inverse-scaled to real units. Naïve baselines (moving average, random walk) make
-the model's value-add measurable rather than assumed.
+A multi-output **LSTM** (64 to 32 units, dropout) trained on the full commodity history: a 60-day window predicts the next day, rolled forward 90 days and inverse-scaled to real units. Naive baselines (moving average, random walk) make the model's value-add measurable rather than assumed.
 
-**Limitations:** the model assumes the future resembles the past and does not
-anticipate structural breaks (geopolitical shocks, policy regime changes). Treat
-forecasts as a central path, not a guarantee.
+**Limitations:** the model assumes the future resembles the past and does not anticipate structural breaks such as geopolitical shocks or policy regime changes. Treat forecasts as a central path, not a guarantee.
 
 ## Disclaimer
 
-Educational / research tool — **not financial advice.** Commodity prices and
-exchange rates are volatile and forecasts carry significant uncertainty. Use
-alongside fundamental analysis and professional advice.
+Educational and research tool. **Not financial advice.** Commodity prices and exchange rates are volatile and forecasts carry significant uncertainty. Use alongside fundamental analysis and professional advice.
 
 ## License
 
